@@ -1,8 +1,14 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from 'src/typeorm/entities/Post';
 import { Profile } from 'src/typeorm/entities/Profile';
 import { User } from 'src/typeorm/entities/User';
+import { ValidateUserMiddleware } from './middlewares/validate-user.middleware';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -11,4 +17,11 @@ import { UsersService } from './users.service';
   controllers: [UsersController],
   providers: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ValidateUserMiddleware).forRoutes({
+      path: 'users',
+      method: RequestMethod.GET,
+    });
+  }
+}

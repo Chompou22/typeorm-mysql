@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -20,52 +22,104 @@ export class UsersController {
   constructor(private userService: UsersService) {}
 
   @Get()
-  getUsers() {
-    return this.userService.findUsers();
+  async getUsers() {
+    try {
+      return await this.userService.findUsers();
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch users',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post()
-  @UsePipes(ValidationPipe)
-  createUser(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createUser(createUserDto);
+  @UsePipes(new ValidationPipe())
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    try {
+      return await this.userService.createUser(createUserDto);
+    } catch (error) {
+      throw new HttpException(
+        'Failed to create user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Put(':id')
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe())
   async updateUserById(
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    await this.userService.updateUser(+id, updateUserDto);
+    try {
+      await this.userService.updateUser(+id, updateUserDto);
+    } catch (error) {
+      throw new HttpException(
+        'Failed to update user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Delete(':id')
   async deleteUserById(@Param('id') id: number) {
-    await this.userService.deleteUser(+id);
+    try {
+      await this.userService.deleteUser(+id);
+    } catch (error) {
+      throw new HttpException(
+        'Failed to delete user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // A single user profile routes
 
   @Post(':id/profiles')
-  @UsePipes(ValidationPipe)
-  createUserProfile(
+  @UsePipes(new ValidationPipe())
+  async createUserProfile(
     @Param('id') id: number,
     @Body() createUserProfileDto: CreateUserProfileDto,
   ) {
-    return this.userService.createUserProfile(+id, createUserProfileDto);
+    try {
+      return await this.userService.createUserProfile(
+        +id,
+        createUserProfileDto,
+      );
+    } catch (error) {
+      throw new HttpException(
+        'Failed to create user profile',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post(':id/posts')
-  @UsePipes(ValidationPipe)
-  createUserPost(
+  @UsePipes(new ValidationPipe())
+  async createUserPost(
     @Param('id') id: number,
     @Body() createUserPostDto: CreateUserPostDto,
   ) {
-    return this.userService.createUserPost(+id, createUserPostDto);
+    try {
+      return await this.userService.createUserPost(+id, createUserPostDto);
+    } catch (error) {
+      throw new HttpException(
+        'Failed to create user post',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Delete(':id/bytheirfk')
   async deleteUserPk(@Param('id') id: number) {
-    await this.userService.deleteUserPk(+id);
+    try {
+      await this.userService.deleteUserPk(+id);
+    } catch (error) {
+      throw new HttpException(
+        'Failed to delete user by foreign key',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
