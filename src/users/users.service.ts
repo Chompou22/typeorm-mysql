@@ -3,13 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from 'src/typeorm/entities/Post';
 import { Profile } from 'src/typeorm/entities/Profile';
 import { User } from 'src/typeorm/entities/User';
-import {
-  CreateUserParams,
-  CreateUserPostParams,
-  CreateUserProfileParams,
-  UpdateUserParams,
-} from 'src/utils/types';
 import { Repository } from 'typeorm';
+import { CreateUserDto } from './dtos/CreateUser.dto';
+import { CreateUserPostDto } from './dtos/CreateUserPost.dto';
+import { CreateUserProfileDto } from './dtos/CreateUserProfile.dto';
+import { UpdateUserDto } from './dtos/UpdateUser.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +22,7 @@ export class UsersService {
     return this.userRepository.find({ relations: ['profile', 'posts'] });
   }
 
-  createUser(userDetails: CreateUserParams) {
+  createUser(userDetails: CreateUserDto) {
     const newUser = this.userRepository.create({
       ...userDetails,
       createdAt: new Date(),
@@ -32,7 +30,7 @@ export class UsersService {
     return this.userRepository.save(newUser);
   }
 
-  updateUser(id: number, updateUserDetails: UpdateUserParams) {
+  updateUser(id: number, updateUserDetails: UpdateUserDto) {
     return this.userRepository.update({ id }, { ...updateUserDetails });
   }
 
@@ -44,7 +42,7 @@ export class UsersService {
 
   async createUserProfile(
     id: number,
-    createUserProfileDetails: CreateUserProfileParams,
+    createUserProfileDetails: CreateUserProfileDto,
   ) {
     const user = await this.userRepository.findOneBy({ id });
     if (!user)
@@ -58,10 +56,7 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  async createUserPost(
-    id: number,
-    createUserPostDetails: CreateUserPostParams,
-  ) {
+  async createUserPost(id: number, createUserPostDetails: CreateUserPostDto) {
     const user = await this.userRepository.findOneBy({ id });
     if (!user)
       throw new HttpException(

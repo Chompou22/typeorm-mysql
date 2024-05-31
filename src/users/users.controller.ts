@@ -6,6 +6,8 @@ import {
   Param,
   Post,
   Put,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/CreateUser.dto';
 import { CreateUserPostDto } from './dtos/CreateUserPost.dto';
@@ -23,11 +25,13 @@ export class UsersController {
   }
 
   @Post()
+  @UsePipes(ValidationPipe)
   createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
   }
 
   @Put(':id')
+  @UsePipes(ValidationPipe)
   async updateUserById(
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -43,6 +47,7 @@ export class UsersController {
   // A single user profile routes
 
   @Post(':id/profiles')
+  @UsePipes(ValidationPipe)
   createUserProfile(
     @Param('id') id: number,
     @Body() createUserProfileDto: CreateUserProfileDto,
@@ -51,6 +56,7 @@ export class UsersController {
   }
 
   @Post(':id/posts')
+  @UsePipes(ValidationPipe)
   createUserPost(
     @Param('id') id: number,
     @Body() createUserPostDto: CreateUserPostDto,
