@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  UseFilters,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -15,6 +16,8 @@ import { CreateUserDto } from './dtos/CreateUser.dto';
 import { CreateUserPostDto } from './dtos/CreateUserPost.dto';
 import { CreateUserProfileDto } from './dtos/CreateUserProfile.dto';
 import { UpdateUserDto } from './dtos/UpdateUser.dto';
+import { UserNotFoundException } from './exceptions/userNotFound.exception';
+import { HttpExceptionFilter } from './filters/httpException.filter';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -30,6 +33,15 @@ export class UsersController {
         'Failed to fetch users',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
+  @UseFilters(HttpExceptionFilter)
+  @Get(':id')
+  async getUserById(@Param('id') id: number) {
+    try {
+      return await this.userService.getUserById(+id);
+    } catch (error) {
+      throw new UserNotFoundException();
     }
   }
 
